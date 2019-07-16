@@ -1,0 +1,24 @@
+---
+- hosts: all
+  become: yes
+  remote_user: cloud_user
+  tasks:
+    - yum: name={{ item }} state=present
+      with_items:
+      - java-1.8.0-openjdk-devel
+      - wget
+    - command: "wget -O /etc/yum.repos.d/jenkins.repo https://pkg.jenkins.io/redhat/jenkins.repo"
+    - command: "rpm --import https://pkg.jenkins.io/redhat/jenkins.io.key"
+    - yum: name=jenkins state=present
+    - service: name=jenkins state=started enabled=yes
+    - name: print Jenkins initial key
+      command: "cat /var/lib/jenkins/secrets/initialAdminPassword"
+      register: secr_key
+    - debug: msg="{{ secr_key.stdout }}"
+    - debug: msg="{{ secr_key.stderr }}"
+    - name: Find my public ip
+      uri: 
+        url: http://ifconfig.me/ip
+        return_content: yes
+      register: ip_response
+    - debug: msg="Public IP Address ------>      {{ ip_response.content }}:8080       <-------"

@@ -1,0 +1,2 @@
+[master]
+master1 ansible_host=3.4.5.6 ansible_user=cloud_user ansible_password=123123 ansible_sudo_pass=123123
